@@ -93,40 +93,18 @@ uv run python scripts/xero_fetch.py --entity organisations --pretty
 
 You should see your Xero organisation details printed as JSON.
 
-### Step 4 — Install the skill in Claude Desktop
+### Step 4 — Upload the skill
 
-The `.skill` file is a ZIP archive. Extract it directly into Claude's skills directory so Claude Desktop picks it up automatically.
+1. Go to **[claude.ai](https://claude.ai)** and sign in
+2. Click your profile icon → **Settings**
+3. Go to **Customize → Skills**
+4. Click the **+** button (or **Upload a skill**)
+5. Select `xero-db-skill.skill` from your downloads — it uploads as-is
+6. The skill activates immediately in both claude.ai and Claude Desktop
 
-```bash
-# Create the skills directory if it doesn't exist
-mkdir -p ~/.claude/skills
+### Step 5 — Test it
 
-# Extract the skill (unzip into ~/.claude/skills/)
-unzip xero-db-skill.skill -d ~/.claude/skills/
-```
-
-This creates `~/.claude/skills/xero-db-skill/` containing `SKILL.md` and all supporting files.
-
-> **If you cloned the repo** instead of downloading the `.skill` file, copy the folder directly:
-> ```bash
-> cp -r ~/xero-db-skill ~/.claude/skills/xero-db-skill
-> ```
-
-**Restart Claude Desktop** after copying — skills are loaded at startup.
-
-### Step 5 — Verify the skill loaded
-
-In a new Claude Desktop conversation, type:
-
-```
-/skills
-```
-
-You should see `xero-db-skill` listed. If you don't, check that `~/.claude/skills/xero-db-skill/SKILL.md` exists.
-
-### Step 6 — Test it
-
-Try asking Claude:
+Open Claude Desktop (or a new claude.ai conversation) and try:
 
 > "Show me all unpaid invoices"
 
@@ -224,40 +202,18 @@ uv run python scripts\xero_fetch.py --entity organisations --pretty
 
 You should see your Xero organisation details printed as JSON.
 
-### Step 4 — Install the skill in Claude Desktop
+### Step 4 — Upload the skill
 
-The `.skill` file is a ZIP archive. Extract it into Claude's skills directory so Claude Desktop picks it up automatically.
+1. Go to **[claude.ai](https://claude.ai)** and sign in
+2. Click your profile icon → **Settings**
+3. Go to **Customize → Skills**
+4. Click the **+** button (or **Upload a skill**)
+5. Select `xero-db-skill.skill` from your Downloads — it uploads as-is
+6. The skill activates immediately in both claude.ai and Claude Desktop
 
-```powershell
-# Create the skills directory if it doesn't exist
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills"
+### Step 5 — Test it
 
-# Extract the skill into the skills directory
-Expand-Archive -Path xero-db-skill.skill -DestinationPath "$env:USERPROFILE\.claude\skills\"
-```
-
-This creates `%USERPROFILE%\.claude\skills\xero-db-skill\` containing `SKILL.md` and all supporting files.
-
-> **If you cloned the repo** instead of downloading the `.skill` file, copy the folder directly:
-> ```powershell
-> Copy-Item -Recurse "$env:USERPROFILE\xero-db-skill" "$env:USERPROFILE\.claude\skills\xero-db-skill"
-> ```
-
-**Restart Claude Desktop** after copying — skills are loaded at startup.
-
-### Step 5 — Verify the skill loaded
-
-In a new Claude Desktop conversation, type:
-
-```
-/skills
-```
-
-You should see `xero-db-skill` listed. If you don't, check that `%USERPROFILE%\.claude\skills\xero-db-skill\SKILL.md` exists.
-
-### Step 6 — Test it
-
-Try asking Claude:
+Open Claude Desktop (or a new claude.ai conversation) and try:
 
 > "Show me all unpaid invoices"
 
@@ -291,7 +247,7 @@ Try asking Claude:
 | `Xero credentials not found` | Check that `scripts/.env` exists and has `XERO_CLIENT_ID` and `XERO_CLIENT_SECRET` |
 | `No Xero tenant connections found` | Go to Xero → Settings → Custom Connections → authorize your app |
 | `Scope denied` | Add the missing scope to your Xero Custom Connection app and re-authorize |
-| Skill not showing in `/skills` | Check that `~/.claude/skills/xero-db-skill/SKILL.md` exists, then fully restart Claude Desktop |
+| Skill not appearing after upload | Re-upload via claude.ai → Settings → Customize → Skills; ensure you selected the `.skill` file |
 | API timeout on large datasets | The script supports `--limit N` to cap record count |
 
 ---
