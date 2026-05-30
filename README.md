@@ -31,27 +31,30 @@ Restart Terminal, then verify:
 uv --version
 ```
 
-### Step 2 — Download the skill
-
-Download `xero-db-skill.skill` from this repository (or clone it):
+### Step 2 — Clone the repo
 
 ```bash
-# Option A: clone the repo
-git clone <repo-url> ~/xero-db-skill
-cd ~/xero-db-skill
-
-# Option B: download just the .skill file
-# Save xero-db-skill.skill somewhere you can find it (e.g. ~/Downloads)
-```
-
-If you cloned the repo, install dependencies now:
-
-```bash
+git clone https://github.com/rajivmehtapy/xero-db-skill.git ~/xero-db-skill
 cd ~/xero-db-skill
 uv sync
 ```
 
-### Step 3 — Set up Xero credentials
+### Step 3 — Build the .skill file
+
+The `.skill` file is not included in the repo — build it with one command:
+
+```bash
+cd ~
+zip -r xero-db-skill.skill xero-db-skill \
+  --exclude "xero-db-skill/.venv/*" \
+  --exclude "xero-db-skill/.env" \
+  --exclude "xero-db-skill/.git/*" \
+  --exclude "xero-db-skill/evals/*"
+```
+
+This creates `~/xero-db-skill.skill`, ready to upload.
+
+### Step 4 — Set up Xero credentials
 
 #### Get your credentials from Xero
 
@@ -93,16 +96,16 @@ uv run python scripts/xero_fetch.py --entity organisations --pretty
 
 You should see your Xero organisation details printed as JSON.
 
-### Step 4 — Upload the skill
+### Step 5 — Upload the skill
 
 1. Go to **[claude.ai](https://claude.ai)** and sign in
 2. Click your profile icon → **Settings**
 3. Go to **Customize → Skills**
 4. Click the **+** button (or **Upload a skill**)
-5. Select `xero-db-skill.skill` from your downloads — it uploads as-is
+5. Select `xero-db-skill.skill` from your home folder — it uploads as-is
 6. The skill activates immediately in both claude.ai and Claude Desktop
 
-### Step 5 — Test it
+### Step 6 — Test it
 
 Open Claude Desktop (or a new claude.ai conversation) and try:
 
@@ -132,27 +135,29 @@ Close and reopen PowerShell, then verify:
 uv --version
 ```
 
-### Step 2 — Download the skill
+### Step 2 — Clone the repo
 
 Open **PowerShell** and run:
 
 ```powershell
-# Option A: clone the repo (requires Git)
-git clone <repo-url> $env:USERPROFILE\xero-db-skill
-cd $env:USERPROFILE\xero-db-skill
-
-# Option B: download just the .skill file
-# Save xero-db-skill.skill somewhere you can find it (e.g. Downloads folder)
-```
-
-If you cloned the repo, install dependencies:
-
-```powershell
+git clone https://github.com/rajivmehtapy/xero-db-skill.git $env:USERPROFILE\xero-db-skill
 cd $env:USERPROFILE\xero-db-skill
 uv sync
 ```
 
-### Step 3 — Set up Xero credentials
+### Step 3 — Build the .skill file
+
+The `.skill` file is not included in the repo — build it with one command:
+
+```powershell
+Compress-Archive -Path $env:USERPROFILE\xero-db-skill `
+  -DestinationPath $env:USERPROFILE\xero-db-skill.skill `
+  -Force
+```
+
+This creates `%USERPROFILE%\xero-db-skill.skill`, ready to upload.
+
+### Step 4 — Set up Xero credentials
 
 #### Get your credentials from Xero
 
@@ -202,16 +207,16 @@ uv run python scripts\xero_fetch.py --entity organisations --pretty
 
 You should see your Xero organisation details printed as JSON.
 
-### Step 4 — Upload the skill
+### Step 5 — Upload the skill
 
 1. Go to **[claude.ai](https://claude.ai)** and sign in
 2. Click your profile icon → **Settings**
 3. Go to **Customize → Skills**
 4. Click the **+** button (or **Upload a skill**)
-5. Select `xero-db-skill.skill` from your Downloads — it uploads as-is
+5. Select `xero-db-skill.skill` from your user folder — it uploads as-is
 6. The skill activates immediately in both claude.ai and Claude Desktop
 
-### Step 5 — Test it
+### Step 6 — Test it
 
 Open Claude Desktop (or a new claude.ai conversation) and try:
 
