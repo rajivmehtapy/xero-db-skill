@@ -1,0 +1,23 @@
+{
+  "skill_name": "xero-db-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to see all our unpaid invoices from the last 30 days. We're trying to chase outstanding payments before end of month and I need to know who owes us and how much.",
+      "expected_output": "Fetches invoices entity, filters for ACCREC type with AUTHORISED status and amount_due > 0, presents an AR aging summary with contact names, invoice numbers, amounts due, and due dates. Explains how to interpret the results for collections.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Who are our top 10 customers by revenue this financial year? I want to know which accounts we should be prioritising for relationship management.",
+      "expected_output": "Fetches invoices entity, filters for ACCREC type, groups by contact name, sums total amounts, ranks top 10, presents as a clear table with revenue totals and percentages of overall revenue.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Can you give me a quick P&L summary for this month? We have our board meeting tomorrow and I need to know if we're on track vs budget. Just give me the headline numbers — revenue, costs, and net profit.",
+      "expected_output": "Fetches reports entity, extracts current month profit_and_loss report, presents headline figures: total revenue, cost of sales, gross profit, operating expenses, and net profit/loss. Notes the period covered and any caveats about unposted transactions.",
+      "files": []
+    }
+  ]
+}

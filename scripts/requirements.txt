@@ -1,0 +1,6 @@
+# This project uses uv for dependency management.
+# Install via: uv sync (from the xero-db-skill/ root)
+#
+# If installing manually without uv:
+xero-python>=10.0.0
+python-dotenv>=1.0.0
