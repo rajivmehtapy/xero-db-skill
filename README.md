@@ -1,8 +1,6 @@
 # xero-db-skill
 
-A Claude Desktop skill + MCP server that answers financial analysis questions using live data from the Xero accounting API. Ask Claude about unpaid invoices, AR/AP aging, top customers, profit & loss, balance sheets, and more — Claude fetches the data directly from Xero and analyzes it for you.
-
-> **Note:** Claude Desktop runs skills inside a sandboxed VM with no outbound internet access. This repo includes an **MCP server** that runs on your local machine (with full network access) and exposes Xero data to Claude Desktop. Both the skill file and MCP server are required.
+An MCP server for Claude Desktop that answers financial analysis questions using live data from the Xero accounting API. Ask Claude about unpaid invoices, AR/AP aging, top customers, profit & loss, balance sheets, and more — Claude fetches the data directly from Xero and analyzes it for you.
 
 ---
 
@@ -12,6 +10,21 @@ A Claude Desktop skill + MCP server that answers financial analysis questions us
 - **A Xero account** with admin access
 - **A Xero Custom Connection app** — [set one up here](https://developer.xero.com/) (takes ~5 minutes)
 - **uv** — Python package manager (installation steps below)
+
+---
+
+## How it works
+
+Claude Desktop communicates with the MCP server running on your local machine. The MCP server calls the Xero API directly and returns data to Claude for analysis.
+
+```
+Claude Desktop                Your Machine
+┌───────────────────┐         ┌──────────────────────────┐
+│                   │   MCP   │  mcp_server.py           │
+│  Claude Desktop   │◀───────▶│  runs xero_fetch.py      │
+│                   │         │  connects to Xero API    │
+└───────────────────┘         └──────────────────────────┘
+```
 
 ---
 
@@ -83,6 +96,12 @@ You should see your Xero organisation details as JSON.
 
 ### Step 4 — Register the MCP server with Claude Desktop
 
+Make the launcher executable:
+
+```bash
+chmod +x ~/xero-db-skill/run-mcp.sh
+```
+
 Open `~/Library/Application Support/Claude/claude_desktop_config.json` in any text editor and add the `xero-db-skill` entry inside `mcpServers`:
 
 ```json
@@ -96,33 +115,9 @@ Open `~/Library/Application Support/Claude/claude_desktop_config.json` in any te
 }
 ```
 
-Replace `YOUR_USERNAME` with your macOS username. If the file doesn't exist yet, create it with exactly the content above.
+Replace `YOUR_USERNAME` with your macOS username (run `whoami` in Terminal if unsure). If the file doesn't exist yet, create it with exactly the content above.
 
-Make the launcher executable:
-
-```bash
-chmod +x ~/xero-db-skill/run-mcp.sh
-```
-
-### Step 5 — Upload the skill file
-
-Build the `.skill` file:
-
-```bash
-cd ~
-zip -r xero-db-skill.skill xero-db-skill \
-  --exclude "xero-db-skill/.venv/*" \
-  --exclude "xero-db-skill/.env" \
-  --exclude "xero-db-skill/.git/*" \
-  --exclude "xero-db-skill/evals/*"
-```
-
-Upload it to Claude Desktop:
-
-1. Go to **Claude Desktop** → **Settings** → **Customize** → **Skills**
-2. Click **Upload a skill** and select `~/xero-db-skill.skill`
-
-### Step 6 — Restart Claude Desktop and test
+### Step 5 — Restart Claude Desktop and test
 
 Quit Claude Desktop completely (Cmd+Q) and reopen it. Then try:
 
@@ -180,7 +175,7 @@ uv run python scripts\xero_fetch.py --entity organisations --pretty
 
 ### Step 4 — Register the MCP server with Claude Desktop
 
-Open `%APPDATA%\Claude\claude_desktop_config.json` in Notepad and add the `xero-db-skill` entry:
+Open `%APPDATA%\Claude\claude_desktop_config.json` in Notepad and add the `xero-db-skill` entry inside `mcpServers`:
 
 ```json
 {
@@ -193,40 +188,13 @@ Open `%APPDATA%\Claude\claude_desktop_config.json` in Notepad and add the `xero-
 }
 ```
 
-Replace `YOUR_USERNAME` with your Windows username.
+Replace `YOUR_USERNAME` with your Windows username (run `echo %USERNAME%` in Command Prompt if unsure). If the file doesn't exist yet, create it with exactly the content above.
 
-### Step 5 — Upload the skill file
-
-```powershell
-Compress-Archive -Path $env:USERPROFILE\xero-db-skill `
-  -DestinationPath $env:USERPROFILE\xero-db-skill.skill `
-  -Force
-```
-
-Upload it in Claude Desktop → **Settings** → **Customize** → **Skills** → **Upload a skill**.
-
-### Step 6 — Restart Claude Desktop and test
+### Step 5 — Restart Claude Desktop and test
 
 Quit Claude Desktop and reopen it, then ask:
 
 > "Show me all unpaid invoices"
-
----
-
-## Why both a skill file AND an MCP server?
-
-Claude Desktop runs skills inside a sandboxed virtual machine that has **no outbound internet access**. The skill file (`.skill`) provides Claude with the instructions and Python script, but the script cannot reach external APIs from inside the VM.
-
-The **MCP server** (`mcp_server.py`) runs directly on your machine — outside the sandbox — where it can freely connect to Xero's API. Claude Desktop communicates with it over a local socket. This is the same pattern used by all MCP integrations in Claude Desktop.
-
-```
-Claude Desktop VM (sandboxed)        Your Machine
-┌──────────────────────────────┐     ┌────────────────────────┐
-│  Skill (SKILL.md + script)   │────▶│  MCP Server            │
-│  reads instructions only     │ MCP │  runs xero_fetch.py    │
-│  calls MCP tools             │◀────│  connects to Xero API  │
-└──────────────────────────────┘     └────────────────────────┘
-```
 
 ---
 
@@ -255,8 +223,7 @@ Claude Desktop VM (sandboxed)        Your Machine
 | `No Xero tenant connections found` | Go to Xero → Settings → Custom Connections → authorize your app |
 | `Scope denied` | Add the missing scope to your Xero Custom Connection app and re-authorize |
 | MCP server not connecting | Check Claude Desktop config JSON for syntax errors; restart Claude Desktop |
-| Skill not appearing after upload | Re-upload via Settings → Customize → Skills |
-| API timeout on large datasets | The script supports `--limit N` to cap record count |
+| API timeout on large datasets | Use `--limit N` in `xero_fetch.py` to cap record count |
 
 ---
 
