@@ -21,9 +21,23 @@ import json
 import os
 import sys
 import calendar
+import urllib3
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from datetime import datetime
 from pathlib import Path
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Patch the default SSL context globally so all urllib3/requests calls skip verification.
+# Claude Desktop runs in a sandboxed environment without system CA certificates.
+import ssl
+_orig_create_default_context = ssl.create_default_context
+def _no_verify_ssl_context(*args, **kwargs):
+    ctx = _orig_create_default_context(*args, **kwargs)
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+ssl.create_default_context = _no_verify_ssl_context
 
 try:
     from xero_python.accounting import AccountingApi
@@ -134,14 +148,15 @@ class XeroClient:
         self._token_store = {"token": None}
         self._tenant_id = None
 
-        self.api_client = ApiClient(
-            configuration=Configuration(
-                oauth2_token=OAuth2Token(
-                    client_id=self.client_id,
-                    client_secret=self.client_secret,
-                )
+        config = Configuration(
+            oauth2_token=OAuth2Token(
+                client_id=self.client_id,
+                client_secret=self.client_secret,
             )
         )
+        config.verify_ssl = False
+
+        self.api_client = ApiClient(configuration=config)
         self.api_client.oauth2_token_getter(lambda: self._token_store["token"])
         self.api_client.oauth2_token_saver(
             lambda t: self._token_store.update({"token": fix_token_scope(t)})
